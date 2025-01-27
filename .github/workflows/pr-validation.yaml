@@ -1,20 +1,30 @@
-name: pr-validation
+name: Pull Request Validation
+
 on:
   pull_request:
     branches:
       - develop
+
 jobs:
-  pr-validation-job:
+  develop-pr-job:
+    name: Validate Pull Request
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Lint HTML Files
-        run: npx htmlhint "**/*.html"
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
 
-      - name: Lint CSS Files
-        run: npx stylelint "**/*.css"
+      - name: Install Dependencies
+        run: npm install
 
-      - name: Build Website
-        run: npx parcel build "./src/index.html" --dist-dir "./dist" --public-url "./"
+      - name: Lint HTML and CSS Files
+        run: |
+          npx htmlhint "**/*.html"
+          npx stylelint "**/*.css"
+
+      - name: Build Static Website
+        run: npx parcel build "./src/index.html" --dist-dir "./dev" --public-url "./"

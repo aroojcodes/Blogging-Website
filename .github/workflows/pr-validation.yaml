@@ -1,44 +1,20 @@
-name: PR Validation
-
+name: pr-validation
 on:
   pull_request:
     branches:
       - develop
-
 jobs:
-  linting:
+  pr-validation-job:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
+      - name: Lint HTML Files
+        run: npx htmlhint "**/*.html"
 
-      - name: Install Dependencies
-        run: npm install htmlhint stylelint
+      - name: Lint CSS Files
+        run: npx stylelint "**/*.css"
 
-      - name: Lint HTML
-        run: npx htmlhint "src/**/*.html"
-
-      - name: Lint CSS
-        run: npx stylelint "styles/**/*.css"
-
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v3
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '16'
-
-      - name: Install Parcel
-        run: npm install parcel --save-dev
-
-      - name: Build Project
-        run: npx parcel build src/index.html
+      - name: Build Website
+        run: npx parcel build "./src/index.html" --dist-dir "./dist" --public-url "./"
